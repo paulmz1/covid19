@@ -1,0 +1,34 @@
+{% macro table(fm, investments) -%}
+
+<table >
+  <tr>
+      <th>Investment</th>
+      <th>Value (£)</th>
+      <th>Cost (£)</th>
+      <th>Change (£)</th>
+      <th>Change (%)</th>
+      <th>Dividends</th>
+      <th>Total</th>
+      <th>Total (%)</th>
+      <th>Annual (%)</th>
+      <th>Total Annual (%)</th>
+  </tr>
+
+ {% for key, value in investments.iterrows() %}
+
+    <tr>
+        <td class="txt"> {{ value['Investment'] }} </td>
+        <td> {{ fm(value['Value (£)']) }} </td>
+        <td> {{ fm(value['Cost (£)']) }} </td>
+        <td> {{ fm(value['Change (£)']) }} </td>
+        <td> {{ fm(value['Change (%)']) }} </td>
+        <td> {{ fm(value['dividends']) }} </td>
+        <td> {{ fm(value['total_return']) }} </td>
+        <td> {{ fm(value['total_percent']) }} </td>
+        <td> {{ fm(value['annual_return']) }} </td>
+        <td> {{ fm(value['total_annual_return']) }} </td>
+    </tr>
+
+ {% endfor %}
+</table>
+{%- endmacro %}
