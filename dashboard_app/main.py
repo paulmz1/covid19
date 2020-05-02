@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
 from waitress import serve
-from dashboard_app import data
+import data
 import json
 import plotly
 

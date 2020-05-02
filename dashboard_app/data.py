@@ -5,10 +5,11 @@ import os
 # https://datatables.net/
 reports = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv'
 population = 'https://raw.githubusercontent.com/datasets/population/master/data/population.csv'
-reports_dl = 'data/countries-aggregated.csv'
-population_dl = 'data/population.csv'
+data_dir = '../data'
+reports_dl = data_dir + '/countries-aggregated.csv'
+population_dl = data_dir + '/population.csv'
 default_countries = 'config/default_countries.csv'
-data_dir = 'data'
+
 
 data = {}
 
