@@ -1,5 +1,5 @@
 <!doctype html>
-
+{% import 'macros.html' as macs %}
 <html>
 <head>
     <link rel="icon" href="static/favicon.png">
@@ -70,6 +70,7 @@
 
     
     </script>
+    {{ macs.cookieconsent_head() }}
 </head>
    <body>
        <h1>Coronavirus (COVID-19)</h1>
@@ -97,6 +98,7 @@
             </tr>
 
          {% endfor %}
+         {{ macs.cookieconsent_body() }}
         </tbody>
     </table>
 

@@ -16,3 +16,4 @@ https://github.com/datasets/population/blob/master/data/population.csv
 https://datatables.net/forums/discussion/22482/howto-save-row-selection-and-highlighting-if-page-refresh  
 https://stackoverflow.com/questions/39733422/sorting-se  
 https://code.tutsplus.com/tutorials/charting-using-plotly-in-python--cms-30286  
+https://www.osano.com/cookieconsent/download/  
