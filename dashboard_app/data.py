@@ -1,4 +1,5 @@
 import pandas as pd
+import plotly.graph_objects as go
 import wget
 import os
 # https://datatables.net/
@@ -43,11 +44,39 @@ def get_default_countries(last_df):
     return idx
 
 
+def get_country(name):
+    reports_df = data['all']
+    df = reports_df[reports_df['Country'].isin([name])].copy()
+
+    df['Closed'] = df['Recovered'] + df['Deaths']
+    df['Active'] = df['Confirmed'] - df['Closed']
+
+    return df
+
+
+def country_chart(name):
+    df = get_country(name)
+    traces = []
+
+    def add_trace(column, color, fill=None):
+        traces.append(go.Scatter(x=df['Date'], y=df[column], name=column, fill=fill, mode='lines', line_color=color))
+
+    add_trace('Confirmed', 'blue')
+    add_trace('Closed', 'indigo', 'tonexty')
+    add_trace('Recovered', 'green')
+    add_trace('Deaths', 'red')
+    add_trace('Active', 'orange')
+
+    return traces
+
 
 def init():
 
     download_data_files()
     reports_df = get_reports()
     last_df = get_last_report(reports_df)
+    data['all'] = reports_df
     data['last_date'] = last_df
     data['default_countries'] = get_default_countries(last_df)
+
+

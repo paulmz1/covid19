@@ -2,6 +2,7 @@
 
 <html>
 <head>
+    <link rel="icon" href="static/favicon.png">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css">
 
@@ -31,7 +32,7 @@
                     orderDataType: 'dom-checkbox'
             }],
             select: {
-              style: 'os',
+              style: 'multi',
               selector: 'td:first-child'
             },
             order: [
@@ -88,7 +89,8 @@
 
             <tr>
                 <td></td>
-                <td> {{ key }} </td>
+                
+                <td><a href="country?name={{ key }}" target="_blank">{{ key }}</a> </td>
                 <td> {{ value['Confirmed'] }} </td>
                 <td> {{ value['Recovered'] }} </td>
                 <td> {{ value['Deaths'] }} </td>
