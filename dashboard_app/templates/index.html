@@ -74,7 +74,7 @@
 </head>
    <body>
        <h1>Coronavirus (COVID-19)</h1>
-       <p>Reported Cases by Country</p>
+       <p>Reported Cases by Country (Data updated {{ data['commit_date'] }}, Last day {{ data['last_date'].strftime("%b %d, %Y") }})</p>
        <table id="countries" class="display">
           <thead>
             <tr>
@@ -86,7 +86,7 @@
             </tr>
           </thead>
           <tbody>
-         {% for key, value in data['last_date'].iterrows() %}
+         {% for key, value in data['last_day'].iterrows() %}
 
             <tr>
                 <td></td>
@@ -101,6 +101,9 @@
          {{ macs.cookieconsent_body() }}
         </tbody>
     </table>
+
+
+
 
    </body>
 </html>
