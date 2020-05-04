@@ -7,11 +7,12 @@ import json
 import threading
 from datetime import datetime, timezone
 from github import Github
-
-# https://datatables.net/
+import utils
+from utils import timer
+log = utils.getLogger(__name__)
 UPDATE_TIME = 60*60
 data_dir = '../data'
-state_file = data_dir + '/state.json'
+# state_file = data_dir + '/state.json'
 reports = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv'
 population = 'https://raw.githubusercontent.com/datasets/population/master/data/population.csv'
 
@@ -20,19 +21,6 @@ population_dl = data_dir + '/population.csv'
 default_countries = 'config/default_countries.csv'
 
 data = {}
-
-
-def load_config():
-    try:
-        with open(state_file, 'r') as f:
-            data['state'] = json.load(f)
-    except FileNotFoundError:
-        data['state'] = {}
-
-
-def save_config():
-    with open(state_file, 'w') as f:
-        json.dump(data['state'], f)
 
 
 def is_newer(local_file, git_file, repo_name):
@@ -44,13 +32,13 @@ def is_newer(local_file, git_file, repo_name):
 
     g = Github()
     if g.get_rate_limit().core.remaining <= 0:
-        print("API limit exceeded", g.get_rate_limit())
+        log.warning("API limit exceeded", g.get_rate_limit())
         return local_file_date
 
     repo = g.get_repo(repo_name)
     commits = repo.get_commits(path=git_file, since=local_file_date)
 
-    print(commits.totalCount)
+    log.info(commits.totalCount)
     if commits.totalCount:
         return commits[0].commit.committer.date
     return False
@@ -68,11 +56,11 @@ def download_data_files():
     except FileNotFoundError:
         commit_date = datetime(2020,1,1)
     if commit_date:
-        print("Downloading new data file")
+        log.info("Downloading new data file")
         try:
             os.remove(reports_dl)
         except FileNotFoundError:
-            print("No old file to remove")
+            log.info("No old file to remove")
         wget.download(reports, reports_dl)
         data['commit_date'] = commit_date
         new_data = True
@@ -87,6 +75,7 @@ def get_reports():
 
 
 # We are only interested in the last day of data
+@timer
 def get_last_report(reports_df):
     last_date = max(reports_df['Date'])
 
@@ -135,13 +124,14 @@ def load_data():
     last_df, last_date = get_last_report(reports_df)
 
     data['all'] = reports_df
+    # log.debug(reports_df.memory_usage())
     data['last_date'] = last_date
     data['last_day'] = last_df
     data['default_countries'] = get_default_countries(last_df)
 
 
 def update_data():
-    print("update_data()")
+    log.info("update_data()")
 
     if download_data_files() or (not 'all' in data):
         load_data()
@@ -150,9 +140,25 @@ def update_data():
 
 
 def init():
-    load_config()
+    # load_config()
     update_data()
     data['commit_date'] = "n/a"
+
+'''
+def load_config():
+    try:
+        with open(state_file, 'r') as f:
+            data['state'] = json.load(f)
+    except FileNotFoundError:
+        data['state'] = {}
+
+
+def save_config():
+    with open(state_file, 'w') as f:
+        json.dump(data['state'], f)
+
+'''
+
 
 
 
