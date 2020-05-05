@@ -10,11 +10,7 @@
     var graphs = {{graphJSON | safe}};
     var layout = {
         title: {
-            text:'Incidents by country',
-            font: {
-                family: 'Courier New, monospace',
-                size: 24
-            },
+            text:'Incidents by country on {{ countries.last_date.strftime("%b %d, %Y") }}',
         }}
     Plotly.plot('countries_last_day_chart', graphs, layout);
 </script>

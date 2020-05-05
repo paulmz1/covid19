@@ -51,11 +51,13 @@
         loadCharts(table);
 
         $('#updateBtn').click(function(){
+            table.draw();
             loadCharts(table);
+            
         });
 
         function loadSelections(){
-            rks = localStorage.rowKeyStore;
+            var rks = localStorage.rowKeyStore;
             
             if(!rks){
                 rks = "{{countries.default_countries}}"
@@ -77,11 +79,58 @@
     });
 
     function loadCharts(table){
-        table.draw()
+        // $('#countries_page').load('/countries?countries='+q);
+        loadCountriesLastDayCharts(table);
+        loadCountriesCharts(table);
+    }
+
+    function loadCountriesLastDayCharts(table){
         var sel = table.rows( {  selected: true, order: 'applied' } );
-        q = JSON.stringify(sel[0]);
+        var q = JSON.stringify(sel[0]);
         $('#countries_last_day_page').load('/countries_last_day?countries='+q);
-        $('#countries_page').load('/countries?countries='+q);
+    }
+
+    function loadCountriesCharts(table, name){
+        var sel = table.rows( {  selected: true } );
+        var i = sel[0]
+        i.sort();
+        var q = JSON.stringify(i);
+
+        loadCountriesChart(table, 'Confirmed', q);
+        loadCountriesChart(table, 'Closed', q);
+        loadCountriesChart(table, 'Recovered', q);
+        loadCountriesChart(table, 'Deaths', q);
+        loadCountriesChart(table, 'Active', q);
+    }
+
+    function loadCountriesChart(table, name, q){
+        Plotly.d3.csv('/countries_csv?countries='+q+'&column='+name, function(data){
+            processData(data, name)
+        } );
+    }
+
+    function processData(rows, name) {
+        function unpack(rows, key) {
+            return rows.map(function(row) {
+                 return row[key];
+             });
+        }
+         
+        var headers = Plotly.d3.keys(rows[0]);
+        
+        var traces = [];
+        
+        for (var i=1; i<headers.length; i++) {
+            header = headers[i];
+            traces.push({
+                x: unpack(rows, 'Date'),
+                y: unpack(rows, header),
+                name: header 
+            });
+        }
+
+        Plotly.newPlot('countries_'+name+'_chart', traces, {title: 'Incidents by country ('+name+')'});
+        
     }
 
     
@@ -118,11 +167,17 @@
             {% endfor %} 
         </tbody>
     </table>
-
+    
+    Hold shift and click to sort by multiple columns. Closed = Recovered + Deaths, Active = Confirmed - Closed. 
+    <br><br>
     <input type="button" id="updateBtn" value="Update Charts" />
     <div id="countries_last_day_page"></div>
-    <div id="countries_page"></div>
-
+    <div id="countries_Confirmed_chart"></div>
+    <div id="countries_Closed_chart"></div>
+    <div id="countries_Recovered_chart"></div>
+    <div id="countries_Deaths_chart"></div>
+    <div id="countries_Active_chart"></div>
+    Click on the trace labels on the right to add and remove traces.
     {{ macs.cookieconsent_body() }}
 </body>
 </html>

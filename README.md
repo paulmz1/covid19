@@ -7,7 +7,12 @@ Requirements.txt generated with> pipreqs --force
 # docker build -t $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG .
 docker build -t paulmz/dashboard:alpha .
 docker push paulmz/dashboard
-docker run -it -p 8080:8080 --rm --name dashboard-app paulmz/dashboard:alpha
+
+gggg docker run -d -p 9000:9000 -p 8000:8000 --name portainer --restart always
+docker run -it -p 8080:8080 --rm --name dashboard paulmz/dashboard:alpha 
+
+docker pull paulmz/dashboard
+docker run -d --name dashboard --network=web --restart always paulmz/dashboard
 
 docker network create web
 docker network connect web dashboard

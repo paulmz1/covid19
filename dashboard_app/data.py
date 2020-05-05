@@ -109,14 +109,25 @@ def countries_last_day_chart(countries_ids: str) -> str:
     df = calculations.get_countries_by_ids(countries, countries_ids)
     return charts.country_last_day_chart(calculations.add_calculated_columns(df))
 
-@timer
+
+# @timer
 def countries_chart(countries_ids):
-    @timer
+    # @timer
     def calc():
         selected_countries = calculations.get_countries_by_ids(countries, countries_ids)
         selected_country_data = calculations.get_countries_by_name(countries, selected_countries)
-        return calculations.add_calculated_columns(selected_country_data)
-    return charts.countries_charts(calc())
+        return calculations.add_calculated_columns(selected_country_data), selected_countries
+    return charts.countries_charts(*calc())
+
+
+@timer
+def countries_chart_csv(countries_ids, column):
+
+    selected_countries = calculations.get_countries_by_ids(countries, countries_ids)
+    selected_country_data = calculations.get_countries_by_name(countries, selected_countries)
+    selected_country_data = calculations.add_calculated_columns(selected_country_data)
+
+    return selected_country_data.pivot(index='Date', columns='Country', values=column).to_csv()
 
 def init():
     # load_config()

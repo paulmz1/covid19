@@ -3,7 +3,7 @@ import utils
 from utils import timer
 from objects import Countries
 # We are only interested in the last day of data
-@timer
+# @timer
 def get_last_day(reports_df):
     last_date = max(reports_df['Date'])
 

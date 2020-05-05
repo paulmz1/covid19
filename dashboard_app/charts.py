@@ -6,7 +6,8 @@ import json
 from utils import timer
 columns = {'Confirmed': ['blue'], 'Closed': ['indigo', 'tonexty'], 'Recovered': ['green'], 'Deaths': ['red'], 'Active': ['orange']}
 
-@timer
+
+# @timer
 def country_last_day_chart(counties: pd.DataFrame):
     traces = []
 
@@ -18,16 +19,32 @@ def country_last_day_chart(counties: pd.DataFrame):
 
     return to_json(traces)
 
-@timer
-def countries_chart(scdata: pd.DataFrame, column) -> str:
+
+# @timer
+def countries_chart2(scdata: pd.DataFrame, country_names: pd.DataFrame, column) -> str:
     fig = px.line(scdata, x='Date', y=column, color='Country')
     return fig.to_json()
 
-@timer
-def countries_charts(selected_country_data: pd.DataFrame) -> dict:
-    return {column: countries_chart(selected_country_data, column) for column, color in columns.items() }
+
+def countries_chart(scdata: pd.DataFrame, country_names: pd.DataFrame, column) -> str:
+    traces = []
+
+    def add_trace(country_name):
+        country_df = scdata[scdata['Country'] == country_name]
+        traces.append(go.Scatter(x=country_df['Date'], y=country_df[column], mode='lines',name=country_name))
+
+    for country_name in country_names.index:
+        add_trace(country_name)
+
+    return to_json(traces)
+
 
 @timer
+def countries_charts(selected_country_data: pd.DataFrame, country_names) -> dict:
+    return {column: countries_chart(selected_country_data, country_names, column) for column, color in columns.items() }
+
+
+# @timer
 def country_chart(country:pd.DataFrame) -> str:
 
     traces = []
@@ -41,5 +58,6 @@ def country_chart(country:pd.DataFrame) -> str:
     return to_json(traces)
 
 
+@timer
 def to_json(traces) -> str:
     return json.dumps(traces, cls=plotly.utils.PlotlyJSONEncoder)

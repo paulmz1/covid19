@@ -5,11 +5,15 @@ import logging
 
 
 def init_logger():
-    logging.basicConfig(level=logging.DEBUG, format='%(message)s             (%(asctime)s | %(name)s | %(levelname)s)')  #
+    logging.basicConfig(level=logging.INFO, format='%(message)s             (%(asctime)s | %(name)s | %(levelname)s)')  #
 
 
 def getLogger(name):
     return logging.getLogger(name)
+
+
+def change_log_level(level: str):
+    logging.getLogger().setLevel(level.upper())
 
 
 log = getLogger(__name__)
