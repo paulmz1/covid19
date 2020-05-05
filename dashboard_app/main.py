@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 from waitress import serve
+from flask_compress import Compress
 import data
 
 import utils
@@ -36,4 +37,5 @@ if __name__ == '__main__':
     utils.init_logger()
     log.info("Starting App")
     data.init()
+    Compress(app)
     serve(app, host="0.0.0.0", port=8080)

@@ -8,6 +8,7 @@ import utils
 import calculations
 import charts
 from objects import Countries
+from utils import timer
 
 log = utils.getLogger(__name__)
 UPDATE_TIME = 20*60
@@ -108,10 +109,14 @@ def countries_last_day_chart(countries_ids: str) -> str:
     df = calculations.get_countries_by_ids(countries, countries_ids)
     return charts.country_last_day_chart(calculations.add_calculated_columns(df))
 
+@timer
 def countries_chart(countries_ids):
-    selected_countries = calculations.get_countries_by_ids(countries, countries_ids)
-    selected_country_data = calculations.get_countries_by_name(countries, selected_countries)
-    return charts.countries_charts(calculations.add_calculated_columns(selected_country_data))
+    @timer
+    def calc():
+        selected_countries = calculations.get_countries_by_ids(countries, countries_ids)
+        selected_country_data = calculations.get_countries_by_name(countries, selected_countries)
+        return calculations.add_calculated_columns(selected_country_data)
+    return charts.countries_charts(calc())
 
 def init():
     # load_config()

@@ -3,9 +3,10 @@ import plotly
 import plotly.graph_objects as go
 import plotly.express as px
 import json
+from utils import timer
 columns = {'Confirmed': ['blue'], 'Closed': ['indigo', 'tonexty'], 'Recovered': ['green'], 'Deaths': ['red'], 'Active': ['orange']}
 
-
+@timer
 def country_last_day_chart(counties: pd.DataFrame):
     traces = []
 
@@ -17,16 +18,16 @@ def country_last_day_chart(counties: pd.DataFrame):
 
     return to_json(traces)
 
-
+@timer
 def countries_chart(scdata: pd.DataFrame, column) -> str:
     fig = px.line(scdata, x='Date', y=column, color='Country')
     return fig.to_json()
 
-
+@timer
 def countries_charts(selected_country_data: pd.DataFrame) -> dict:
     return {column: countries_chart(selected_country_data, column) for column, color in columns.items() }
 
-
+@timer
 def country_chart(country:pd.DataFrame) -> str:
 
     traces = []
