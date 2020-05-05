@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+    {% for key, value in graphJSON.items() %}
+    <div id="countries_chart_{{key}}" class="chart">
+    </div>
+    {% endfor %}
+</body>
+<script type="text/javascript">
+    {% for key, value in graphJSON.items() %}
+    var graphs = {{value | safe}};
+    Plotly.plot('countries_chart_{{key}}', graphs, {});
+    {% endfor %}
+</script>
+</html>

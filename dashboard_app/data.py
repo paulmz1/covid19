@@ -1,16 +1,16 @@
 import pandas as pd
-import plotly.graph_objects as go
 import wget
 import os
-import time
-import json
 import threading
 from datetime import datetime, timezone
 from github import Github
 import utils
-from utils import timer
+import calculations
+import charts
+from objects import Countries
+
 log = utils.getLogger(__name__)
-UPDATE_TIME = 60*60
+UPDATE_TIME = 20*60
 data_dir = '../data'
 # state_file = data_dir + '/state.json'
 reports = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv'
@@ -20,14 +20,14 @@ reports_dl = data_dir + '/countries-aggregated.csv'
 population_dl = data_dir + '/population.csv'
 default_countries = 'config/default_countries.csv'
 
-data = {}
+countries = Countries()
 
 
 def is_newer(local_file, git_file, repo_name):
 
     local_file_date = datetime.fromtimestamp(os.path.getmtime(local_file), timezone.utc)
 
-    if not 'all' in data: # Don't check Github on first load to limit API usage.
+    if not countries.loaded: # Don't check Github on first load to limit API usage.
         return False
 
     g = Github()
@@ -62,7 +62,7 @@ def download_data_files():
         except FileNotFoundError:
             log.info("No old file to remove")
         wget.download(reports, reports_dl)
-        data['commit_date'] = commit_date
+        countries.commit_date = commit_date
         new_data = True
 
     return new_data
@@ -74,75 +74,49 @@ def get_reports():
     return df
 
 
-# We are only interested in the last day of data
-@timer
-def get_last_report(reports_df):
-    last_date = max(reports_df['Date'])
-
-    last = reports_df[reports_df['Date'] == last_date]
-    last = last.drop(labels='Date', axis=1)
-    last.set_index('Country', inplace=True)
-    return last, last_date
-
-
 def get_default_countries(last_df):
     df_def_countries = pd.read_csv(default_countries)
     idx = [i for i, country in enumerate(last_df.index) if country in df_def_countries['Country'].tolist()]
-
-    # idx = last_df[last_df.index.isin(df_def_countries['Country'])].index
     return idx
-
-
-def get_country(name):
-    reports_df = data['all']
-    df = reports_df[reports_df['Country'].isin([name])].copy()
-
-    df['Closed'] = df['Recovered'] + df['Deaths']
-    df['Active'] = df['Confirmed'] - df['Closed']
-
-    return df
-
-
-def country_chart(name):
-    df = get_country(name)
-    traces = []
-
-    def add_trace(column, color, fill=None):
-        traces.append(go.Scatter(x=df['Date'], y=df[column], name=column, fill=fill, mode='lines', line_color=color))
-
-    add_trace('Confirmed', 'blue')
-    add_trace('Closed', 'indigo', 'tonexty')
-    add_trace('Recovered', 'green')
-    add_trace('Deaths', 'red')
-    add_trace('Active', 'orange')
-
-    return traces
 
 
 def load_data():
     reports_df = get_reports()
-    last_df, last_date = get_last_report(reports_df)
-
-    data['all'] = reports_df
-    # log.debug(reports_df.memory_usage())
-    data['last_date'] = last_date
-    data['last_day'] = last_df
-    data['default_countries'] = get_default_countries(last_df)
+    last_day, last_date = calculations.get_last_day(reports_df)
+    countries.load(reports_df, last_day, last_date,  get_default_countries(last_day))
 
 
 def update_data():
     log.info("update_data()")
 
-    if download_data_files() or (not 'all' in data):
+    if download_data_files() or not countries.loaded:
         load_data()
 
     threading.Timer(UPDATE_TIME, update_data).start()
 
 
+def countries_calculated():
+    return calculations.add_calculated_columns(countries.last_day)
+
+
+def country_chart(name):
+    country = calculations.get_country(countries.all_days, name)
+    return charts.country_chart(calculations.add_calculated_columns(country))
+
+
+def countries_last_day_chart(countries_ids: str) -> str:
+    df = calculations.get_countries_by_ids(countries, countries_ids)
+    return charts.country_last_day_chart(calculations.add_calculated_columns(df))
+
+def countries_chart(countries_ids):
+    selected_countries = calculations.get_countries_by_ids(countries, countries_ids)
+    selected_country_data = calculations.get_countries_by_name(countries, selected_countries)
+    return charts.countries_charts(calculations.add_calculated_columns(selected_country_data))
+
 def init():
     # load_config()
     update_data()
-    data['commit_date'] = "n/a"
+
 
 '''
 def load_config():
@@ -158,8 +132,5 @@ def save_config():
         json.dump(data['state'], f)
 
 '''
-
-
-
 
 

@@ -1,5 +1,6 @@
-waitress==1.4.3
-pandas==1.0.3
 Flask==1.1.2
-wget==3.2
+waitress==1.4.3
 plotly==4.6.0
+pandas==1.0.3
+wget==3.2
+PyGithub==1.51

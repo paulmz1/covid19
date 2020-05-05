@@ -27,6 +27,11 @@ def timer(f):
         return result
     return wrapper
 
+def to_list(string):
+    if string in ['','[]']:
+        return []
+    return [int(x) for x in string[1:-1].split(',')]
+
 
 @timer
 def long_loop(n):

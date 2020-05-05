@@ -11,6 +11,8 @@
     <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
 
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+
     <script type="text/javascript" class="init">
 
     $.fn.dataTable.ext.order['dom-checkbox'] = function  ( settings, col ){
@@ -56,7 +58,7 @@
             rks = localStorage.rowKeyStore;
             
             if(!rks){
-                rks = "{{data['default_countries']}}"
+                rks = "{{countries.default_countries}}"
             }
             
             var rowKeys = JSON.parse(rks);
@@ -75,9 +77,11 @@
     });
 
     function loadCharts(table){
+        table.draw()
         var sel = table.rows( {  selected: true, order: 'applied' } );
         q = JSON.stringify(sel[0]);
-        $('#countries_last_day').load('/countries_last_day?countries='+q);
+        $('#countries_last_day_page').load('/countries_last_day?countries='+q);
+        $('#countries_page').load('/countries?countries='+q);
     }
 
     
@@ -86,33 +90,38 @@
 </head>
 <body>
     <h1>Coronavirus (COVID-19)</h1>
-    <p>Reported Cases by Country (Data updated {{ data['commit_date'] }}, Last day {{ data['last_date'].strftime("%b %d, %Y") }})</p>
+    <p>Reported Cases by Country (Data updated {{ countries.commit_date }}, Last day {{ countries.last_date.strftime("%b %d, %Y") }})</p>
     <table id="countries" class="display">
         <thead>
             <tr>
                 <th></th>
                 <th>Country</th>
                 <th>Confirmed</th>
+                <th>Closed</th>
                 <th>Recovered</th>
                 <th>Deaths</th>
+                <th>Active</th>
             </tr>
         </thead>
         <tbody>
-            {% for key, value in data['last_day'].iterrows() %}
+            {% for key, value in last_day.iterrows() %}
             <tr>
                 <td></td>
                 
                 <td><a href="country?name={{ key }}" target="_blank">{{ key }}</a> </td>
                 <td> {{ value['Confirmed'] }} </td>
+                <td> {{ value['Closed'] }} </td>
                 <td> {{ value['Recovered'] }} </td>
                 <td> {{ value['Deaths'] }} </td>
+                <td> {{ value['Active'] }} </td>
             </tr>
             {% endfor %} 
         </tbody>
     </table>
 
     <input type="button" id="updateBtn" value="Update Charts" />
-    <div id="countries_last_day"></div>
+    <div id="countries_last_day_page"></div>
+    <div id="countries_page"></div>
 
     {{ macs.cookieconsent_body() }}
 </body>

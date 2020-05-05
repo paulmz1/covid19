@@ -1,10 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
 </head>
 <body>
-<h1>Countries Last Day</h1>
-{{ countries }}
+    <div id="countries_last_day_chart" class="chart">
+    </div>
 </body>
+<script type="text/javascript">
+    var graphs = {{graphJSON | safe}};
+    var layout = {
+        title: {
+            text:'Incidents by country',
+            font: {
+                family: 'Courier New, monospace',
+                size: 24
+            },
+        }}
+    Plotly.plot('countries_last_day_chart', graphs, layout);
+</script>
 </html>
