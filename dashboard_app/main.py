@@ -5,13 +5,15 @@ import data
 
 import utils
 import logging
+import locale
+locale.setlocale(locale.LC_ALL, 'en_uk')
 log = utils.getLogger(__name__)
 app = Flask(__name__)
 
 
 @app.route('/')
 def index():
-    return render_template('index.html', countries=data.countries,  last_day=data.countries_calculated())
+    return render_template('index.html', countries=data.countries,  last_day=data.countries_calculated(), fn=utils.fn, ff=utils.ff)
 
 
 @app.route('/country')
@@ -23,23 +25,27 @@ def country():
 @app.route('/countries_last_day')
 def countries_last_day():
     countries_ids = request.args.get('countries')
+    per_million = request.args.get('per_million') == 'true'
+    chart = data.countries_last_day_chart(countries_ids, per_million)
+    return render_template('countries_last_day.html', graphJSON=chart, countries=data.countries, per_million=per_million)
 
-    chart = data.countries_last_day_chart(countries_ids)
-    return render_template('countries_last_day.html', graphJSON=chart, countries=data.countries)
 
-
+'''
 @app.route('/countries')
 def countries():
     countries_ids = request.args.get('countries')
-    chart = data.countries_chart(countries_ids)
+    per_million = request.args.get('per_million')
+    chart = data.countries_chart(countries_ids, per_million)
     return render_template('countries.html', graphJSON=chart)
+'''
 
 
 @app.route('/countries_csv')
 def countries_csv():
     countries_ids = request.args.get('countries')
     column = request.args.get('column')
-    return data.countries_chart_csv(countries_ids, column)
+    per_million = request.args.get('per_million') == 'true'
+    return data.countries_chart_csv(countries_ids, column, per_million)
 
 
 @app.route('/set_debug_level')

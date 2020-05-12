@@ -1,8 +1,15 @@
 <!doctype html>
+{% import 'index.js' as js %}
 {% import 'macros.html' as macs %}
 <html>
 <head>
     <title>Coronavirus (COVID-19)</title>
+    <style>
+        .per_mil {
+            float: left;
+            padding-left: 150px;
+        }
+    </style>
     <link rel="icon" href="static/favicon.png">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css">
@@ -13,127 +20,9 @@
 
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 
-    <script type="text/javascript" class="init">
-
-    $.fn.dataTable.ext.order['dom-checkbox'] = function  ( settings, col ){
-      return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
-        return $(td).closest('tr').hasClass('selected') ? '1' : '0';
-      } );
-    }
-    
-
-    $(document).ready(function() {
-        var table = $('#countries').DataTable({
-           "stateSave": true,
-           "stateDuration": 0,
-           "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-
-           columnDefs: [{
-              orderable: true,
-              className: 'select-checkbox',
-              targets: 0,
-                    orderDataType: 'dom-checkbox'
-            }],
-            select: {
-              style: 'multi',
-              selector: 'td:first-child'
-            },
-            order: [
-              [0, 'desc'],[2, 'desc']
-            ]
-        });
-
-        table
-            .on( 'select', saveSelections)
-            .on( 'deselect', saveSelections);
-        
-        loadSelections();
-        loadCharts(table);
-
-        $('#updateBtn').click(function(){
-            table.draw();
-            loadCharts(table);
-            
-        });
-
-        function loadSelections(){
-            var rks = localStorage.rowKeyStore;
-            
-            if(!rks){
-                rks = "{{countries.default_countries}}"
-            }
-            
-            var rowKeys = JSON.parse(rks);
-            for (var key in rowKeys){
-                table.row(rowKeys[key]).select()
-            }
-            table.draw()
-            
-        }
-
-        function saveSelections(){
-            var sel = table.rows( { selected: true } );
-            localStorage.rowKeyStore = JSON.stringify(sel[0]);
-        }
-
-    });
-
-    function loadCharts(table){
-        // $('#countries_page').load('/countries?countries='+q);
-        loadCountriesLastDayCharts(table);
-        loadCountriesCharts(table);
-    }
-
-    function loadCountriesLastDayCharts(table){
-        var sel = table.rows( {  selected: true, order: 'applied' } );
-        var q = JSON.stringify(sel[0]);
-        $('#countries_last_day_page').load('/countries_last_day?countries='+q);
-    }
-
-    function loadCountriesCharts(table, name){
-        var sel = table.rows( {  selected: true } );
-        var i = sel[0]
-        i.sort();
-        var q = JSON.stringify(i);
-
-        loadCountriesChart(table, 'Confirmed', q);
-        loadCountriesChart(table, 'Closed', q);
-        loadCountriesChart(table, 'Recovered', q);
-        loadCountriesChart(table, 'Deaths', q);
-        loadCountriesChart(table, 'Active', q);
-    }
-
-    function loadCountriesChart(table, name, q){
-        Plotly.d3.csv('/countries_csv?countries='+q+'&column='+name, function(data){
-            processData(data, name)
-        } );
-    }
-
-    function processData(rows, name) {
-        function unpack(rows, key) {
-            return rows.map(function(row) {
-                 return row[key];
-             });
-        }
-         
-        var headers = Plotly.d3.keys(rows[0]);
-        
-        var traces = [];
-        
-        for (var i=1; i<headers.length; i++) {
-            header = headers[i];
-            traces.push({
-                x: unpack(rows, 'Date'),
-                y: unpack(rows, header),
-                name: header 
-            });
-        }
-
-        Plotly.newPlot('countries_'+name+'_chart', traces, {title: 'Incidents by country ('+name+')'});
-        
-    }
-
-    
+    <script type="text/javascript">
+        default_countries = "{{countries.default_countries}}"
+        {{js.js()}}
     </script>
     {{ macs.cookieconsent_head() }}
 </head>
@@ -150,19 +39,32 @@
                 <th>Recovered</th>
                 <th>Deaths</th>
                 <th>Active</th>
+                <th>Confirmed</th>
+                <th>Closed</th>
+                <th>Recovered</th>
+                <th>Deaths</th>
+                <th>Active</th>
+                <th>Population</th>
             </tr>
         </thead>
         <tbody>
             {% for key, value in last_day.iterrows() %}
             <tr>
                 <td></td>
-                
-                <td><a href="country?name={{ key }}" target="_blank">{{ key }}</a> </td>
-                <td> {{ value['Confirmed'] }} </td>
-                <td> {{ value['Closed'] }} </td>
-                <td> {{ value['Recovered'] }} </td>
-                <td> {{ value['Deaths'] }} </td>
-                <td> {{ value['Active'] }} </td>
+                <td><a href="country?name={{ value['Alias'] }}" target="_blank">{{ key }}</a> </td>
+                <td> {{ fn(value['Confirmed']) }} </td>
+                <td> {{ fn(value['Closed']) }} </td>
+                <td> {{ fn(value['Recovered']) }} </td>
+                <td> {{ fn(value['Deaths']) }} </td>
+                <td> {{ fn(value['Active']) }} </td>
+
+                <td> {{ ff(value['Confirmed_PM']) }} </td>
+                <td> {{ ff(value['Closed_PM']) }} </td>
+                <td> {{ ff(value['Recovered_PM']) }} </td>
+                <td> {{ ff(value['Deaths_PM']) }} </td>
+                <td> {{ ff(value['Active_PM']) }} </td>
+
+                <td> {{ fn(value['Population']) }} </td>
             </tr>
             {% endfor %} 
         </tbody>

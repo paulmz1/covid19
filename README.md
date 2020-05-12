@@ -8,7 +8,6 @@ Requirements.txt generated with> pipreqs --force
 docker build -t paulmz/dashboard:alpha .
 docker push paulmz/dashboard
 
-gggg docker run -d -p 9000:9000 -p 8000:8000 --name portainer --restart always
 docker run -it -p 8080:8080 --rm --name dashboard paulmz/dashboard:alpha 
 
 docker pull paulmz/dashboard
@@ -18,6 +17,9 @@ docker network create web
 docker network connect web dashboard
 docker network connect web nginx-letsencrypt-container
 ```
+####Stack
+NginX (LetsEncrypt) -> Waitress -> Flask  
+--- Docker -> Ubuntu -> VPS ---
 
 ### References
 https://datatables.net/  

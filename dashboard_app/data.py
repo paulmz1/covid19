@@ -5,21 +5,21 @@ import threading
 from datetime import datetime, timezone
 from github import Github
 import utils
-import calculations
+import calculations as calc
 import charts
 from objects import Countries
 from utils import timer
 
 log = utils.getLogger(__name__)
-UPDATE_TIME = 20*60
+UPDATE_TIME = 60*60
 data_dir = '../data'
 # state_file = data_dir + '/state.json'
-reports = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv'
-population = 'https://raw.githubusercontent.com/datasets/population/master/data/population.csv'
+reports_url = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv'
+population_url = 'https://raw.githubusercontent.com/datasets/population/master/data/population.csv'
 
 reports_dl = data_dir + '/countries-aggregated.csv'
-population_dl = data_dir + '/population.csv'
-default_countries = 'config/default_countries.csv'
+countries_url = 'config/countries.csv'
+default_countries_url = 'config/default_countries.csv'
 
 countries = Countries()
 
@@ -50,7 +50,6 @@ def download_data_files():
     new_data = False
     if not os.path.exists(data_dir):
         os.mkdir(data_dir)
-        wget.download(population, population_dl)
         new_data = True
     try:
         commit_date = is_newer(reports_dl, "data/countries-aggregated.csv","datasets/covid-19")
@@ -62,7 +61,7 @@ def download_data_files():
             os.remove(reports_dl)
         except FileNotFoundError:
             log.info("No old file to remove")
-        wget.download(reports, reports_dl)
+        wget.download(reports_url, reports_dl)
         countries.commit_date = commit_date
         new_data = True
 
@@ -74,17 +73,23 @@ def get_reports():
     df['Date'] = pd.to_datetime(df['Date'])
     return df
 
+def get_population():
+    df = pd.read_csv(countries_url)
+    df.set_index('Country', inplace=True)
+    return df
+
 
 def get_default_countries(last_df):
-    df_def_countries = pd.read_csv(default_countries)
+    df_def_countries = pd.read_csv(default_countries_url)
     idx = [i for i, country in enumerate(last_df.index) if country in df_def_countries['Country'].tolist()]
     return idx
 
 
 def load_data():
     reports_df = get_reports()
-    last_day, last_date = calculations.get_last_day(reports_df)
-    countries.load(reports_df, last_day, last_date,  get_default_countries(last_day))
+    reports_last_day, last_date = calc.get_last_day(reports_df)
+    population = get_population()
+    countries.load(reports_df, reports_last_day, last_date,  get_default_countries(reports_last_day), population)
 
 
 def update_data():
@@ -97,37 +102,50 @@ def update_data():
 
 
 def countries_calculated():
-    return calculations.add_calculated_columns(countries.last_day)
+    return calc.add_calculated_for_population_columns(
+        calc.add_calculated_columns(
+            calc.add_population_index(countries.last_day, countries.population)))
 
 
 def country_chart(name):
-    country = calculations.get_country(countries.all_days, name)
-    return charts.country_chart(calculations.add_calculated_columns(country))
+    country = calc.get_country(countries.all_days, name)
+    return charts.country_chart(calc.add_calculated_columns(country))
 
 
-def countries_last_day_chart(countries_ids: str) -> str:
-    df = calculations.get_countries_by_ids(countries, countries_ids)
-    return charts.country_last_day_chart(calculations.add_calculated_columns(df))
+def countries_last_day_chart(countries_ids: str, per_million) -> str:
+    df = calc.get_countries_by_ids(countries, countries_ids)
+    df = calc.add_calculated_columns(df)
+    if per_million:
+        df = calc.add_population_index(df, countries.population)
+        df = calc.by_population(df)
+    return charts.country_last_day_chart(df)
 
 
-# @timer
-def countries_chart(countries_ids):
+'''
+def countries_chart(countries_ids, per_million):
     # @timer
-    def calc():
-        selected_countries = calculations.get_countries_by_ids(countries, countries_ids)
-        selected_country_data = calculations.get_countries_by_name(countries, selected_countries)
-        return calculations.add_calculated_columns(selected_country_data), selected_countries
-    return charts.countries_charts(*calc())
-
+    def calculate():
+        selected_countries = calc.get_countries_by_ids(countries, countries_ids)
+        selected_country_data = calc.get_countries_by_name(countries, selected_countries)
+        if per_million:
+            selected_country_data = calc.add_population(selected_country_data, countries.population)
+            selected_country_data = calc.by_population(selected_country_data)
+        return calc.add_calculated_columns(selected_country_data), selected_countries
+    return charts.countries_charts(*calculate())
+'''
 
 @timer
-def countries_chart_csv(countries_ids, column):
+def countries_chart_csv(countries_ids, column, per_million):
 
-    selected_countries = calculations.get_countries_by_ids(countries, countries_ids)
-    selected_country_data = calculations.get_countries_by_name(countries, selected_countries)
-    selected_country_data = calculations.add_calculated_columns(selected_country_data)
+    selected_countries = calc.get_countries_by_ids(countries, countries_ids)
+    selected_country_data = calc.get_countries_by_name(countries, selected_countries)
+    selected_country_data = calc.add_calculated_columns(selected_country_data)
+    if per_million:
+        selected_country_data = calc.add_population(selected_country_data, countries.population)
+        selected_country_data = calc.by_population(selected_country_data)
 
     return selected_country_data.pivot(index='Date', columns='Country', values=column).to_csv()
+
 
 def init():
     # load_config()

@@ -7,11 +7,12 @@
     </div>
 </body>
 <script type="text/javascript">
+    var per_million = '{{per_million}}' == 'True';
     var graphs = {{graphJSON | safe}};
     var layout = {
         title: {
-            text:'Incidents by country on {{ countries.last_date.strftime("%b %d, %Y") }}',
-        }}
+            text:'Incidents by country '+ (per_million ? 'per million population ' : '') +'on {{ countries.last_date.strftime("%b %d, %Y") }}',
+        } }
     Plotly.plot('countries_last_day_chart', graphs, layout);
 </script>
 </html>
