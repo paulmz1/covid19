@@ -5,13 +5,15 @@ import threading
 from datetime import datetime, timezone
 from github import Github
 import utils
+
 import calculations as calc
+
 import charts
 from objects import Countries
 from utils import timer
 
 log = utils.getLogger(__name__)
-UPDATE_TIME = 60*60
+UPDATE_TIME = 20*60
 data_dir = '../data'
 # state_file = data_dir + '/state.json'
 reports_url = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv'

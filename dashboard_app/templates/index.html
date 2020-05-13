@@ -3,7 +3,7 @@
 {% import 'macros.html' as macs %}
 <html>
 <head>
-    <title>Coronavirus (COVID-19)</title>
+    <title>COVID-19</title>
     <style>
         .per_mil {
             float: left;
@@ -27,7 +27,7 @@
     {{ macs.cookieconsent_head() }}
 </head>
 <body>
-    <h1>Coronavirus (COVID-19)</h1>
+    <h1>COVID-19 Dashboard</h1>
     <p>Reported Cases by Country (Data updated {{ countries.commit_date }}, Last day {{ countries.last_date.strftime("%b %d, %Y") }})</p>
     <table id="countries" class="display">
         <thead>
@@ -71,7 +71,7 @@
     </table>
     
     Hold shift and click to sort by multiple columns. Closed = Recovered + Deaths, Active = Confirmed - Closed. 
-    <br><br>
+    <br/><br/>
     <input type="button" id="updateBtn" value="Update Charts" />
     <div id="countries_last_day_page"></div>
     <div id="countries_Confirmed_chart"></div>
@@ -79,7 +79,11 @@
     <div id="countries_Recovered_chart"></div>
     <div id="countries_Deaths_chart"></div>
     <div id="countries_Active_chart"></div>
-    Click on the trace labels on the right to add and remove traces.
+    Click on the trace labels on the right to add and remove traces.<br/>
+    <br/>
+    Data sourced from<br/>
+    <a href="https://github.com/datasets/covid-19">Datasets Github Repo</a><br/>
+    <a href="https://github.com/CSSEGISandData/COVID-19">Johns Hopkins University COVID-19 Github Repo</a><br/>
     {{ macs.cookieconsent_body() }}
 </body>
 </html>
