@@ -5,7 +5,7 @@ For PyCharm, mark /dashboard_app as sources root. Right click the folder | Mark 
 Requirements.txt generated with> pipreqs --force
 ```
 # docker build -t $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG .
-docker build -t paulmz/dashboard:alpha .
+docker build -t paulmz/dashboard:latest .
 docker push paulmz/dashboard
 
 docker run -it -p 8080:8080 --rm --name dashboard paulmz/dashboard:alpha 

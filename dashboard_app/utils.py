@@ -38,7 +38,7 @@ def to_list(string):
 
 
 def fn(s):
-    return f'{s:n}'
+    return f'{s:,.0f}'
 
 
 # 1234 -> 1,234, 12.34 -> 12, 1.234 -> 1.2 0.1234 -> 0.12

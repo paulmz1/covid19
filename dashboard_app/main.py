@@ -5,8 +5,8 @@ import data
 
 import utils
 import logging
-import locale
-locale.setlocale(locale.LC_ALL, 'en_uk')
+# import locale
+# locale.setlocale(locale.LC_ALL, 'en_uk')
 log = utils.getLogger(__name__)
 app = Flask(__name__)
 
