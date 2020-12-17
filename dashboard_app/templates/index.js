@@ -45,6 +45,7 @@ $(document).ready(function() {
     showPopulation(false);
     loadSelections();
     loadCharts(table);
+    // loadFooter();
 
     function showPopulation(show){
         table.columns([2,3,4,5,6]).visible(!show);
@@ -134,6 +135,10 @@ function processData(rows, name, per_million) {
     var title = 'Incidents by country '+ (per_million ? 'per million population ' : '') +'('+name+')'
     Plotly.newPlot('countries_'+name+'_chart', traces, {title: title});
 
+}
+
+function loadFooter(){
+    $('#footer').load('/static/footer.html');
 }
 {%- endmacro %}
 

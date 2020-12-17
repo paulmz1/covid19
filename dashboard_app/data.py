@@ -136,7 +136,7 @@ def countries_chart(countries_ids, per_million):
     return charts.countries_charts(*calculate())
 '''
 
-@timer
+# @timer
 def countries_chart_csv(countries_ids, column, per_million):
 
     selected_countries = calc.get_countries_by_ids(countries, countries_ids)

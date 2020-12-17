@@ -186,7 +186,6 @@ French Guiana,Americas,South America,275713,282731,2.55%,French Guiana
 French Polynesia,Oceania,Polynesia,277679,279287,0.58%,French Polynesia
 Mayotte,Africa,Eastern Africa,259531,266150,2.55%,Mayotte
 São Tomé and Príncipe,Africa,Middle Africa,211028,215056,1.91%,São Tomé and Príncipe
-Western Samoa,Oceania,Polynesia,196129,197097,0.49%,Western Samoa
 Saint Lucia,Americas,Caribbean,181889,182790,0.50%,Saint Lucia
 Guernsey and Jersey,Europe,Northern Europe,170499,172259,1.03%,Guernsey and Jersey
 Guam,Oceania,Micronesia,165768,167294,0.92%,Guam
@@ -196,6 +195,7 @@ F.S. Micronesia,Oceania,Micronesia,112640,113815,1.04%,F.S. Micronesia
 Grenada,Americas,Caribbean,111454,112003,0.49%,Grenada
 Tonga,Oceania,Polynesia,110589,110940,0.32%,Tonga
 Saint Vincent and the Grenadines,Americas,Caribbean,110211,110589,0.34%,Saint Vincent and the Grenadines
+Samoa,Oceania,Polynesia,196129,197097,0.49%,Samoa
 Aruba,Americas,Caribbean,105845,106314,0.44%,Aruba
 U.S. Virgin Islands,Americas,Caribbean,104680,104578,?0.10%,U.S. Virgin Islands
 Seychelles,Africa,Eastern Africa,97096,97739,0.66%,Seychelles
@@ -208,7 +208,6 @@ Bermuda,Americas,Northern America,62756,62506,?0.40%,Bermuda
 Marshall Islands,Oceania,Micronesia,58413,58791,0.65%,Marshall Islands
 Greenland,Americas,Northern America,56564,56672,0.19%,Greenland
 Northern Mariana Islands,Oceania,Micronesia,56882,56188,?1.22%,Northern Mariana Islands
-American Samoa,Oceania,Polynesia,55465,55312,?0.28%,American Samoa
 Saint Kitts and Nevis,Americas,Caribbean,52441,52823,0.73%,Saint Kitts and Nevis
 Faroe Islands,Europe,Northern Europe,48497,48678,0.37%,Faroe Islands
 Sint Maarten,Americas,Caribbean,41940,42388,1.07%,Sint Maarten
