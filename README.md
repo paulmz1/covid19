@@ -17,9 +17,9 @@ docker network create web
 docker network connect web dashboard
 docker network connect web nginx-letsencrypt-container
 ```
-####Stack
+#### Stack
 NginX (LetsEncrypt) -> Waitress -> Flask  
---- Docker -> Ubuntu -> VPS ---
+Docker -> Ubuntu -> VPS 
 
 ### References
 https://datatables.net/  
