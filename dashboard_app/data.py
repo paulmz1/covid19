@@ -16,7 +16,7 @@ log = utils.getLogger(__name__)
 UPDATE_TIME = 20*60
 data_dir = '../data'
 # state_file = data_dir + '/state.json'
-reports_url = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv'
+reports_url = 'https://raw.githubusercontent.com/datasets/covid-19/main/data/countries-aggregated.csv'
 population_url = 'https://raw.githubusercontent.com/datasets/population/master/data/population.csv'
 
 reports_dl = data_dir + '/countries-aggregated.csv'
