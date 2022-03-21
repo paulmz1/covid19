@@ -1,5 +1,5 @@
 plotly==4.14.1
-waitress==1.4.3
+waitress==2.1.1
 Flask_Compress==1.8.0
 Flask==1.1.2
 wget==3.2
